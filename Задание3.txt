@@ -1,0 +1,112 @@
+#include <iostream>
+#include <fstream>
+#include <stack>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class TrainSortingNode {
+private:
+    stack<int> type1Wagons;
+    stack<int> type2Wagons;
+    stack<int> sortingNode;
+
+public:
+    void addWagon(int wagonType) {
+        if (wagonType == 1) {
+            type1Wagons.push(wagonType);
+        }
+        else if (wagonType == 2) {
+            type2Wagons.push(wagonType);
+        }
+    }
+
+    void sortWagons() {
+        while (!type1Wagons.empty() || !type2Wagons.empty()) {
+            if (!type1Wagons.empty()) {
+                sortingNode.push(type1Wagons.top());
+                type1Wagons.pop();
+            }
+            if (!type2Wagons.empty()) {
+                sortingNode.push(type2Wagons.top());
+                type2Wagons.pop();
+            }
+        }
+    }
+
+    void displaySortingNode() const {
+        cout << "Состав в Т-образном сортировочном узле:" << endl;
+        stack<int> tempStack = sortingNode;
+        while (!tempStack.empty()) {
+            cout << tempStack.top() << " ";
+            tempStack.pop();
+        }
+        cout << endl;
+    }
+
+    void loadWagonsFromFile(const string& filename) {
+        ifstream inputFile(filename);
+        if (!inputFile.is_open()) {
+            cerr << "Ошибка открытия файла." << endl;
+            return;
+        }
+
+        int wagonType;
+        while (inputFile >> wagonType) {
+            addWagon(wagonType);
+        }
+
+        inputFile.close();
+    }
+};
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+
+    TrainSortingNode trainNode;
+
+    int choice;
+    do {
+        cout << "\nМеню:\n";
+        cout << "1. Добавить вагон\n";
+        cout << "2. Сформировать Т-образный сортировочный узел\n";
+        cout << "3. Отобразить состав в узле\n";
+        cout << "4. Загрузить вагоны из файла\n";
+        cout << "0. Выход\n";
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1: {
+            int wagonType;
+            cout << "Введите тип вагона (1 или 2): ";
+            cin >> wagonType;
+            trainNode.addWagon(wagonType);
+            break;
+        }
+        case 2:
+            trainNode.sortWagons();
+            cout << "Т-образный сортировочный узел сформирован." << endl;
+            break;
+        case 3:
+            trainNode.displaySortingNode();
+            break;
+        case 4: {
+            string filename;
+            cout << "Введите имя файла: ";
+            cin >> filename;
+            trainNode.loadWagonsFromFile(filename);
+            break;
+        }
+        case 0:
+            cout << "Программа завершена." << endl;
+            break;
+        default:
+            cout << "Неверный выбор. Попробуйте снова." << endl;
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}

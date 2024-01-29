@@ -1,0 +1,82 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iomanip>
+
+using namespace std;
+
+class Aeroflot {
+private:
+    int flightNumber;
+    string departureCity;
+    string destinationCity;
+    string arrivalTime;
+    string departureTime;
+    string registrationSection;
+
+public:
+    Aeroflot(int num, const string& depCity, const string& destCity, const string& arrTime, const string& depTime, const string& regSection)
+        : flightNumber(num), departureCity(depCity), destinationCity(destCity), arrivalTime(arrTime), departureTime(depTime), registrationSection(regSection) {}
+
+    // Геттеры для доступа к приватным свойствам
+    int getFlightNumber() const { return flightNumber; }
+    const string& getDepartureCity() const { return departureCity; }
+    const string& getDestinationCity() const { return destinationCity; }
+    const string& getArrivalTime() const { return arrivalTime; }
+    const string& getDepartureTime() const { return departureTime; }
+    const string& getRegistrationSection() const { return registrationSection; }
+
+    // Функция вывода информации о рейсе
+    void displayFlightInfo() const {
+        cout << setw(6) << getFlightNumber() << setw(15) << getDepartureCity() << setw(15) << getDestinationCity()
+            << setw(15) << getArrivalTime() << setw(15) << getDepartureTime() << setw(15) << getRegistrationSection() << endl;
+    }
+};
+
+bool compareFlights(const Aeroflot& a, const Aeroflot& b) {
+    return a.getDestinationCity() < b.getDestinationCity();
+}
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+    vector<Aeroflot> flights;
+    int numFlights;
+    cout << "Введите количество рейсов: ";
+    cin >> numFlights;
+
+    for (int i = 0; i < numFlights; ++i) {
+        int num;
+        string depCity, destCity, arrTime, depTime, regSection;
+
+        cout << "Введите информацию о рейсе " << i + 1 << ":" << endl;
+        cout << "Номер рейса: ";
+        cin >> num;
+        cout << "Пункт отправления: ";
+        cin >> depCity;
+        cout << "Пункт назначения: ";
+        cin >> destCity;
+        cout << "Время прибытия: ";
+        cin >> arrTime;
+        cout << "Время отправления: ";
+        cin >> depTime;
+        cout << "Место регистрации: ";
+        cin >> regSection;
+
+        flights.emplace_back(num, depCity, destCity, arrTime, depTime, regSection);
+    }
+
+    sort(flights.begin(), flights.end(), compareFlights);
+
+    cout << setw(6) << "Номер" << setw(15) << "Отправление" << setw(15) << "Назначение"
+        << setw(15) << "Прибытие" << setw(15) << "Отправление" << setw(15) << "Регистрация" << endl;
+
+    for (const auto& flight : flights) {
+        flight.displayFlightInfo();
+    }
+
+    if (flights.empty()) {
+        cout << "Нет информации о рейсах." << endl;
+    }
+
+    return 0;
+}

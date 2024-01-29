@@ -1,0 +1,144 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+
+using namespace std;
+
+class Student {
+private:
+    string firstName;
+    string lastName;
+    string birthDate;
+    string phoneNumber;
+
+public:
+    Student(const string& fName, const string& lName, const string& bDate, const string& phone)
+        : firstName(fName), lastName(lName), birthDate(bDate), phoneNumber(phone) {}
+
+    const string& getFirstName() const { return firstName; }
+    const string& getLastName() const { return lastName; }
+    const string& getBirthDate() const { return birthDate; }
+    const string& getPhoneNumber() const { return phoneNumber; }
+
+    void displayStudentInfo() const {
+        cout << "Фамилия: " << getLastName() << "\nИмя: " << getFirstName() << "\nДата рождения: " << getBirthDate() << "\nТелефон: " << getPhoneNumber() << endl;
+    }
+};
+
+class StudentDatabase {
+private:
+    vector<Student> students;
+
+public:
+    void addStudent(const Student& student) {
+        students.push_back(student);
+    }
+
+    void removeStudent(const string& lastName) {
+        auto it = find_if(students.begin(), students.end(), [&](const Student& s) { return s.getLastName() == lastName; });
+        if (it != students.end()) {
+            students.erase(it);
+            cout << "Студент с фамилией " << lastName << " удален." << endl;
+        }
+        else {
+            cout << "Студент с фамилией " << lastName << " не найден." << endl;
+        }
+    }
+
+    void searchStudent(const string& searchKey) const {
+        for (const auto& student : students) {
+            if (student.getLastName() == searchKey || student.getBirthDate() == searchKey || student.getPhoneNumber() == searchKey) {
+                student.displayStudentInfo();
+                return;
+            }
+        }
+        cout << "Студент с указанным признаком не найден." << endl;
+    }
+
+    void sortStudentsByName() {
+        sort(students.begin(), students.end(), [](const Student& a, const Student& b) {
+            return a.getLastName() < b.getLastName();
+            });
+    }
+
+    void displayAllStudents() const {
+        if (students.empty()) {
+            cout << "База данных студентов пуста." << endl;
+            return;
+        }
+
+        cout << "Список студентов:" << endl;
+        for (const auto& student : students) {
+            student.displayStudentInfo();
+            cout << "---------------------------" << endl;
+        }
+    }
+};
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+
+    StudentDatabase database;
+
+    int choice;
+    do {
+        cout << "\nМеню:\n";
+        cout << "1. Добавить студента\n";
+        cout << "2. Удалить студента\n";
+        cout << "3. Поиск студента\n";
+        cout << "4. Сортировка по фамилии\n";
+        cout << "5. Показать всех студентов\n";
+        cout << "0. Выход\n";
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1: {
+            string fName, lName, bDate, phone;
+            cout << "Введите данные студента:\n";
+            cout << "Имя: ";
+            cin >> fName;
+            cout << "Фамилия: ";
+            cin >> lName;
+            cout << "Дата рождения: ";
+            cin >> bDate;
+            cout << "Номер телефона: ";
+            cin >> phone;
+
+            Student newStudent(fName, lName, bDate, phone);
+            database.addStudent(newStudent);
+            break;
+        }
+        case 2: {
+            string lastName;
+            cout << "Введите фамилию студента, которого нужно удалить: ";
+            cin >> lastName;
+            database.removeStudent(lastName);
+            break;
+        }
+        case 3: {
+            string searchKey;
+            cout << "Введите фамилию, дату рождения или номер телефона для поиска студента: ";
+            cin >> searchKey;
+            database.searchStudent(searchKey);
+            break;
+        }
+        case 4:
+            database.sortStudentsByName();
+            cout << "Студенты отсортированы по фамилии." << endl;
+            break;
+        case 5:
+            database.displayAllStudents();
+            break;
+        case 0:
+            cout << "Программа завершена." << endl;
+            break;
+        default:
+            cout << "Неверный выбор. Попробуйте снова." << endl;
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}
